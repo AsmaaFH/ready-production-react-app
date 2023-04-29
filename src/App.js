@@ -1,7 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
-import Navbar from "./components/Navbar";
 import Card from "./components/Card";
-import UploadForm from "./components/Uploadform";
+import Layout from "./components/Layout";
 import "./App.css";
 
 const photos = [];
@@ -27,6 +26,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         items: [state.inputs, ...state.items],
+        inputs: { title: null, file: null, path: null },
       };
     case "setInputs":
       return {
@@ -59,30 +59,15 @@ function App() {
     setCount(`you have ${state.items.length} image${state.items.length > 1 ? "s" : ""}`);
   }, [state.items]);
   return (
-    <>
-      <Navbar />
-      <div className="container text-center mt-5">
-        <button className="btn btn-success float-end" onClick={() => toggle(!state.isCollapsed)}>
-          {state.isCollapsed ? "Close" : "+ Add"}
-        </button>
-
-        <div className="clearfix mb-4"></div>
-        <UploadForm
-          inputs={state.inputs}
-          isVisible={state.isCollapsed}
-          onChange={handleOnChange}
-          onSubmit={handleOnSubmit}
-        />
-        {count}
-        <h1>Gallery</h1>
-
-        <div className="row">
-          {state.items.map((photo, index) => (
-            <Card key={index} src={photo.path} />
-          ))}
-        </div>
+    <Layout state={state} onChange={handleOnChange} onSubmit={handleOnSubmit} toggle={toggle}>
+      <h1 className="text-center">Gallery</h1>
+      {count}
+      <div className="row">
+        {state.items.map((item, index) => (
+          <Card key={index} {...item} />
+        ))}
       </div>
-    </>
+    </Layout>
   );
 }
 export default App;

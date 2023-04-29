@@ -35,7 +35,7 @@ function App() {
           {isCollapsed ? "Close" : "+ Add"}
         </button>
         <div className="clearfix mb-4"></div>
-        <UploadForm isVisible={isCollapsed} onChange={handleOnChange} onSubmit={handleOnSubmit} />
+        <UploadForm inputs={inputs} isVisible={isCollapsed} onChange={handleOnChange} onSubmit={handleOnSubmit} />
         {count}
         <h1>Gallery</h1>
 

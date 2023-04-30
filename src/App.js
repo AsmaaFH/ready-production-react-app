@@ -1,29 +1,32 @@
-import { useState, useEffect, useContext } from "react";
+import {  useMemo, useContext, useEffect } from "react";
+import { Context } from "./context"
+import Firestore from "./handlers/firestore";
 import Card from "./components/Card";
 import Layout from "./components/Layout";
 import "./App.css";
-import { Context } from "./context";
+
+
 
 
 function App() {
-  const [count, setCount] = useState();
-
-  const {state, dispatch} = useContext(Context)  
+  const { state, read } = useContext(Context)
+  const count = useMemo(() => {
+    return `you have ${state.items.length} image${state.items.length > 1 ? 's': ''}`
+  }, [state.items])
 
   useEffect(() => {
-    setCount(`you have ${state.items.length} image${state.items.length > 1 ? "s" : ""}`);
-  }, [state.items]);
+    read()
+  }, [])
 
   return (
-    <Layout >
-      <h1 className="text-center">Gallery</h1>
-      {count}
-      <div className="row">
-        {state.items.map((item, index) => (
-          <Card key={index} {...item} />
-        ))}
-      </div>
+    <Layout>
+        <h1 className="text-center">Gallery</h1>
+        {count}
+        <div className="row">
+        {state.items.map((item, index) => <Card key={index} {...item}/>)}
+        </div>
     </Layout>
   );
+ 
 }
 export default App;

@@ -1,5 +1,6 @@
 import { useMemo, useContext } from "react";
-import { Context } from "../context";
+import { Context } from "../context/FirestoreContext";
+import { useAuthContext } from "../context/AuthContext";
 import Firestore from "../handlers/firestore";
 import Storage from "../handlers/storage";
 
@@ -8,6 +9,7 @@ const { uploadFile, downloadFile } = Storage;
 
 const Preview = () => {
   const { state } = useContext(Context);
+  const { currentUser } = useAuthContext();
   const {
     inputs: { path },
   } = state; // destructuring the current state
@@ -28,14 +30,18 @@ const Preview = () => {
 
 const UploadForm = () => {
   const { dispatch, state } = useContext(Context);
+  const { currentUser } = useAuthContext();
   const { isCollapsed: isVisible, inputs } = state; // destructuring the current state
+
   const handleOnChange = (e) => dispatch({ type: "setInputs", payload: { value: e } });
+
+  const username = currentUser?.displayName.split(" ").join("");
   const handleOnSubmit = (e) => {
     e.preventDefault();
     uploadFile(state.inputs)
       .then(downloadFile)
       .then((url) => {
-        writeDoc({ ...inputs, path: url }, "stocks").then(() => {
+        writeDoc({ ...inputs, path: url, user: username.toLowerCase() }, "stocks").then(() => {
           dispatch({ type: "setItem" });
           dispatch({ type: "collapse", payload: { bool: false } });
         });
@@ -50,7 +56,11 @@ const UploadForm = () => {
         <p className="display-6 text-center mb-3">Upload Stock Image</p>
         <div className="mb-5 d-flex align-items-center justify-content-center">
           <Preview />
-          <form className="mb-2" style={{ textAlign: "left" }} onSubmit={handleOnSubmit}>
+          <form
+            className="mb-2"
+            style={{ textAlign: "left" }}
+            onSubmit={handleOnSubmit}
+          >
             <div className="mb-3">
               <input
                 type="text"
@@ -62,9 +72,18 @@ const UploadForm = () => {
               />
             </div>
             <div className="mb-3">
-              <input type="file" className="form-control" name="file" onChange={handleOnChange} />
+              <input
+                type="file"
+                className="form-control"
+                name="file"
+                onChange={handleOnChange}
+              />
             </div>
-            <button type="submit" className="btn btn-success float-end" disabled={isDisabled}>
+            <button
+              type="submit"
+              className="btn btn-success float-end"
+              disabled={isDisabled}
+            >
               Save and upload
             </button>
           </form>

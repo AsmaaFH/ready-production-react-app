@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
+import { useFirestoreContext } from "../context/FirestoreContext"
 
 const LogIn = () => {
   const { login, currentUser } = useAuthContext();
@@ -74,9 +75,23 @@ function Navigation() {
 }
 
 function SearchForm() {
+  const [text, search] = useState(null);
+  const { filterItems: filter } = useFirestoreContext();
+  const handleOnChange = (e) => {
+    search(e.target.value);
+    filter(e.target.value);
+  };
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    filter(text);
+  };
   return (
-    <form className="d-flex">
+    <form
+      className="d-flex"
+      onSubmit={handleOnSubmit}
+    >
       <input
+        onChange={handleOnChange}
         className="form-control me-2"
         type="search"
         placeholder="Search"
@@ -139,7 +154,7 @@ function Dropdown() {
               >
                 <Link to="/profile">{username}</Link>
               </a>
-                <hr className="dropdown divider" />
+              <hr className="dropdown divider" />
             </li>
           )}
           <div className="d-flex justify-content-center">

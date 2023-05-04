@@ -38,6 +38,10 @@ const UploadForm = () => {
   const username = currentUser?.displayName.split(" ").join("");
   const handleOnSubmit = (e) => {
     e.preventDefault();
+    if(currentUser === null){
+      console.log('You cant upload, login ')
+      return
+    }
     uploadFile(state.inputs)
       .then(downloadFile)
       .then((url) => {
